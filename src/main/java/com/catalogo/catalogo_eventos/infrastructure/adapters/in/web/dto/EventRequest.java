@@ -1,30 +1,28 @@
-package com.catalogo.catalogo_eventos.domain.model;
+package com.catalogo.catalogo_eventos.infrastructure.adapters.in.web.dto;
 
 import java.time.LocalDate;
 
-public class Event {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-    private Long id;
+public class EventRequest {
+
+    @NotBlank(message = "Event name must not be blank")
+    @Size(max = 255, message = "Event name must be at most 255 characters")
     private String name;
+
+    @Size(max = 1000, message = "Description must be at most 1000 characters")
     private String description;
+
     private LocalDate date;
 
-    public Event() {
+    public EventRequest() {
     }
 
-    public Event(Long id, String name, String description, LocalDate date) {
-        this.id = id;
+    public EventRequest(String name, String description, LocalDate date) {
         this.name = name;
         this.description = description;
         this.date = date;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {

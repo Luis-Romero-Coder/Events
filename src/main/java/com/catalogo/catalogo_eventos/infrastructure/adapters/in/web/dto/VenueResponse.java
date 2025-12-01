@@ -1,15 +1,15 @@
-package com.catalogo.catalogo_eventos.domain.model;
+package com.catalogo.catalogo_eventos.infrastructure.adapters.in.web.dto;
 
-public class Venue {
+public class VenueResponse {
 
     private Long id;
     private String name;
     private String address;
 
-    public Venue() {
+    public VenueResponse() {
     }
 
-    public Venue(Long id, String name, String address) {
+    public VenueResponse(Long id, String name, String address) {
         this.id = id;
         this.name = name;
         this.address = address;

@@ -4,28 +4,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ApiError {
-    private LocalDateTime timestamp;
+
     private int status;
-    private String error;
-    private List<String> messages;
-    private String path;
+    private String message;
+    private LocalDateTime timestamp;
+    private List<String> errors;
 
-    public ApiError() {}
+    public ApiError() {
+    }
 
-    public ApiError(LocalDateTime timestamp, int status, String error, List<String> messages, String path) {
-        this.timestamp = timestamp;
+    public ApiError(int status, String message, LocalDateTime timestamp, List<String> errors) {
         this.status = status;
-        this.error = error;
-        this.messages = messages;
-        this.path = path;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
+        this.message = message;
         this.timestamp = timestamp;
+        this.errors = errors;
     }
 
     public int getStatus() {
@@ -36,29 +28,28 @@ public class ApiError {
         this.status = status;
     }
 
-    public String getError() {
-        return error;
+    public String getMessage() {
+        return message;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public List<String> getMessages() {
-        return messages;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setMessages(List<String> messages) {
-        this.messages = messages;
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
-    public String getPath() {
-        return path;
+    public List<String> getErrors() {
+        return errors;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setErrors(List<String> errors) {
+        this.errors = errors;
     }
-
-    
 }
+

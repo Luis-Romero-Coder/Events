@@ -1,96 +1,107 @@
 package com.catalogo.catalogo_eventos.infrastructure.adapters.in.web;
 
-import com.catalogo.catalogo_eventos.domain.model.Event;
-import com.catalogo.catalogo_eventos.domain.ports.in.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-import java.time.LocalDateTime;
+import com.catalogo.catalogo_eventos.domain.model.Event;
+import com.catalogo.catalogo_eventos.domain.model.PageRequests;
+import com.catalogo.catalogo_eventos.domain.model.PaginatedResult;
+import com.catalogo.catalogo_eventos.domain.ports.in.CreateEventUseCase;
+import com.catalogo.catalogo_eventos.domain.ports.in.DeleteEventUseCase;
+import com.catalogo.catalogo_eventos.domain.ports.in.GetEventUseCase;
+import com.catalogo.catalogo_eventos.domain.ports.in.ListEventsUseCase;
+import com.catalogo.catalogo_eventos.domain.ports.in.UpdateEventUseCase;
+import com.catalogo.catalogo_eventos.infrastructure.adapters.in.web.dto.EventRequest;
+import com.catalogo.catalogo_eventos.infrastructure.adapters.in.web.dto.EventResponse;
+import com.catalogo.catalogo_eventos.infrastructure.mapper.EventMapper;
 
-
-
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/events")
-@Validated
 public class EventRestAdapter {
-    private final CreateEventUseCase createUseCase;
-    private final GetEventUseCase getUseCase;
-    private final UpdateEventUseCase updateUseCase;
-    private final DeleteEventUseCase deleteUseCase;
-    private final ListEventUseCase listUseCase;
-    public EventRestAdapter(CreateEventUseCase createUseCase, GetEventUseCase getUseCase,
-            UpdateEventUseCase updateUseCase, DeleteEventUseCase deleteUseCase, ListEventUseCase listUseCase) {
-        this.createUseCase = createUseCase;
-        this.getUseCase = getUseCase;
-        this.updateUseCase = updateUseCase;
-        this.deleteUseCase = deleteUseCase;
-        this.listUseCase = listUseCase;
-    }
 
+    private final CreateEventUseCase createEventUseCase;
+    private final GetEventUseCase getEventUseCase;
+    private final ListEventsUseCase listEventsUseCase;
+    private final UpdateEventUseCase updateEventUseCase;
+    private final DeleteEventUseCase deleteEventUseCase;
+    private final EventMapper mapper;
 
-    public static class CreateEventRequest{
-        @NotBlank(message="Name must not be blank")
-        @Size(max= 255, message="Name can not exceed 255 characters")
-        public String name;
-
-        @Size(max= 2000, message="Name can not exceed 2000 characters")
-        public String description;
-        
-        public LocalDateTime date;
-        public Long venueId;
-    }
-
-    public static class UpdateEventRequest{
-        @Size(max = 255)
-        public String name;
-
-        @Size(max = 2000)
-        public String description;
-
-        public LocalDateTime date;
-        public Long venueId;
+    public EventRestAdapter(CreateEventUseCase createEventUseCase,
+                            GetEventUseCase getEventUseCase,
+                            ListEventsUseCase listEventsUseCase,
+                            UpdateEventUseCase updateEventUseCase,
+                            DeleteEventUseCase deleteEventUseCase,
+                            EventMapper mapper) {
+        this.createEventUseCase = createEventUseCase;
+        this.getEventUseCase = getEventUseCase;
+        this.listEventsUseCase = listEventsUseCase;
+        this.updateEventUseCase = updateEventUseCase;
+        this.deleteEventUseCase = deleteEventUseCase;
+        this.mapper = mapper;
     }
 
     @PostMapping
-    public ResponseEntity<Event> create(@Valid @RequestBody CreateEventRequest req) {
-        Event toCreate = new Event(null, req.name, req.description, req.date, req.venueId);
-        Event created = createUseCase.create(toCreate);
-        return ResponseEntity.created(URI.create("/api/events" + created.getId())).body(created);
-    }
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<Event> getById(@PathVariable @Min(1) Long id) {
-        Event e = getUseCase.getById(id);
-        return ResponseEntity.ok(e);
-    }
-    
-    @PutMapping("/{id}")
-    public ResponseEntity<Event> update(@PathVariable @Min(1) Long id, @Valid @RequestBody UpdateEventRequest req) {
-        Event toUpdate = new Event(null, req.name, req.description, req.date, req.venueId);
-        Event updated =  updateUseCase.update(id, toUpdate);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<EventResponse> create(@Valid @RequestBody EventRequest request) {
+        Event domain = mapper.toDomain(request);
+        Event created = createEventUseCase.create(domain);
+        return ResponseEntity.status(201).body(mapper.toResponse(created));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable @Min(1) Long id){
-        deleteUseCase.delete(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/{id}")
+    public ResponseEntity<EventResponse> getById(@PathVariable Long id) {
+        Event e = getEventUseCase.getById(id);
+        return ResponseEntity.ok(mapper.toResponse(e));
     }
 
     @GetMapping
-    public ResponseEntity<Page<Event>> list( @RequestParam(required = false)String name, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Event> result = listUseCase.list(name, pageable);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<PaginatedResult<EventResponse>> list(
+            @RequestParam(value = "name", required = false) String name,
+            Pageable pageable) {
+
+        // Convert Spring Pageable -> domain PageRequest
+        PageRequests pageRequest = new PageRequests(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort().toString());
+        PaginatedResult<Event> domainPage = listEventsUseCase.list(name, pageRequest);
+
+        List<EventResponse> content = domainPage.getContent()
+                .stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+
+        PaginatedResult<EventResponse> responsePage = new PaginatedResult<>(
+                content,
+                domainPage.getTotalElements(),
+                domainPage.getTotalPages(),
+                domainPage.getPageNumber(),
+                domainPage.getPageSize()
+        );
+
+        return ResponseEntity.ok(responsePage);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EventResponse> update(@PathVariable Long id, @Valid @RequestBody EventRequest request) {
+        Event domain = mapper.toDomain(request);
+        Event updated = updateEventUseCase.update(id, domain);
+        return ResponseEntity.ok(mapper.toResponse(updated));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        deleteEventUseCase.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

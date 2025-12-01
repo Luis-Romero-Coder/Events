@@ -1,5 +1,7 @@
 package com.catalogo.catalogo_eventos.domain.ports.in;
 
-public class GetVenueUseCase {
-    
+import com.catalogo.catalogo_eventos.domain.model.Venue;
+
+public interface GetVenueUseCase {
+    Venue getById(Long id);
 }

@@ -1,34 +1,18 @@
-package com.catalogo.catalogo_eventos.infrastructure.adapters.out.jpa.entity;
+package com.catalogo.catalogo_eventos.infrastructure.adapters.in.web.dto;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+public class EventResponse {
 
-@Entity
-@Table(name = "events")
-public class EventEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, unique = true)
     private String name;
-
-    @Column(length = 1000)
     private String description;
-
     private LocalDate date;
 
-    public EventEntity() {
+    public EventResponse() {
     }
 
-    public EventEntity(Long id, String name, String description, LocalDate date) {
+    public EventResponse(Long id, String name, String description, LocalDate date) {
         this.id = id;
         this.name = name;
         this.description = description;

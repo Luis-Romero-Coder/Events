@@ -1,5 +1,5 @@
 package com.catalogo.catalogo_eventos.domain.ports.in;
 
-public class DeleteVenueUseCase {
-    
+public interface DeleteVenueUseCase {
+    void delete(Long id);
 }
