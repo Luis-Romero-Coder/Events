@@ -1,0 +1,10 @@
+/home/Coder/Documentos/LHRC/catalogo-eventos/src/main/java/com/catalogo/catalogo_eventos/CatalogoEventosApplication.java
+/home/Coder/Documentos/LHRC/catalogo-eventos/src/main/java/com/catalogo/catalogo_eventos/config/OpenApiConfig.java
+/home/Coder/Documentos/LHRC/catalogo-eventos/src/main/java/com/catalogo/catalogo_eventos/controller/EventController.java
+/home/Coder/Documentos/LHRC/catalogo-eventos/src/main/java/com/catalogo/catalogo_eventos/controller/VenueController.java
+/home/Coder/Documentos/LHRC/catalogo-eventos/src/main/java/com/catalogo/catalogo_eventos/model/Event.java
+/home/Coder/Documentos/LHRC/catalogo-eventos/src/main/java/com/catalogo/catalogo_eventos/model/Venue.java
+/home/Coder/Documentos/LHRC/catalogo-eventos/src/main/java/com/catalogo/catalogo_eventos/repository/EventRepository.java
+/home/Coder/Documentos/LHRC/catalogo-eventos/src/main/java/com/catalogo/catalogo_eventos/repository/VenueRepository.java
+/home/Coder/Documentos/LHRC/catalogo-eventos/src/main/java/com/catalogo/catalogo_eventos/service/EventService.java
+/home/Coder/Documentos/LHRC/catalogo-eventos/src/main/java/com/catalogo/catalogo_eventos/service/VenueService.java
